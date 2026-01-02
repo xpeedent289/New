@@ -100,6 +100,6 @@ if __name__ == "__main__":
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.benchmark = True
-    model = Model(local_rank=0, distributed=False)
+    model = Model(local_rank=0)
     train(model, args.local_rank, args.batch_size, args.data_path)
         
