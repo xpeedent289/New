@@ -20,11 +20,12 @@ class Model:
         # train
         self.optimG = AdamW(self.net.parameters(), lr=2e-4, weight_decay=1e-4)
         self.lap = LapLoss()
+        
+        # Only use DDP if distributed training is initialized
         if dist.is_available() and dist.is_initialized():
             self.net = DDP(self.net, device_ids=[local_rank], output_device=local_rank)
         else:
-            # For single GPU, just move model to GPU
-            pass
+            print(f"Using single GPU training")
     def train(self):
         self.net.train()
 
