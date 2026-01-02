@@ -21,7 +21,9 @@ class Model:
         self.lap = LapLoss()
         if local_rank != -1:
             self.net = DDP(self.net, device_ids=[local_rank], output_device=local_rank)
-
+        else:
+            # For single GPU, just move model to GPU
+            self.net = self.net.to(f'cuda:{local_rank}')
     def train(self):
         self.net.train()
 
