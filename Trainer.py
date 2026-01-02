@@ -4,6 +4,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.optim import AdamW
 from model.loss import *
 from model.warplayer import warp
+import torch.distributed as dist
 
 from config import *
 
@@ -19,11 +20,11 @@ class Model:
         # train
         self.optimG = AdamW(self.net.parameters(), lr=2e-4, weight_decay=1e-4)
         self.lap = LapLoss()
-        if local_rank != -1:
+        if dist.is_available() and dist.is_initialized():
             self.net = DDP(self.net, device_ids=[local_rank], output_device=local_rank)
         else:
             # For single GPU, just move model to GPU
-            self.net = self.net.to(f'cuda:{local_rank}')
+            pass
     def train(self):
         self.net.train()
 
