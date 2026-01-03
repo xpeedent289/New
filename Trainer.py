@@ -1,3 +1,4 @@
+from string.templatelib import convert
 import torch
 import torch.nn.functional as F
 from torch.nn.parallel import DistributedDataParallel as DDP
@@ -36,17 +37,11 @@ class Model:
     def device(self):
         self.net.to(torch.device("cuda"))
 
-    def load_model(self, name=None, rank=0):
-        def convert(param):
-            return {
-            k.replace("module.", ""): v
-                for k, v in param.items()
-                if "module." in k and 'attn_mask' not in k and 'HW' not in k
-            }
-        if rank <= 0 :
-            if name is None:
-                name = self.name
-            self.net.load_state_dict(convert(torch.load(f'ckpt/{name}.pkl')))
+    def load_model(self, name):
+        ckpt_path = os.path.join(os.getcwd(), "..", "ckpt", f"{name}.pkl")
+        ckpt_path = os.path.abspath(ckpt_path)
+        print("Loading checkpoint from", ckpt_path)
+        self.net.load_state_dict(convert(torch.load(ckpt_path)))
     
 def save_model(self, rank=0, epoch=0, step=0):
     if rank == 0:
