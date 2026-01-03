@@ -1,4 +1,3 @@
-from string.templatelib import convert
 import torch
 import torch.nn.functional as F
 from torch.nn.parallel import DistributedDataParallel as DDP
@@ -37,11 +36,17 @@ class Model:
     def device(self):
         self.net.to(torch.device("cuda"))
 
-    def load_model(self, name):
-        ckpt_path = os.path.join(os.getcwd(), "..", "ckpt", f"{name}.pkl")
-        ckpt_path = os.path.abspath(ckpt_path)
-        print("Loading checkpoint from", ckpt_path)
-        self.net.load_state_dict(convert(torch.load(ckpt_path)))
+def load_model(self, name):
+    ckpt_path = os.path.join(
+        os.path.dirname(__file__), "..", "ckpt", f"{name}.pkl"
+    )
+    ckpt_path = os.path.abspath(ckpt_path)
+
+    print("Loading checkpoint from:", ckpt_path)
+    state_dict = torch.load(ckpt_path, map_location="cpu")
+    self.net.load_state_dict(state_dict, strict=True)
+
+
     
 def save_model(self, rank=0, epoch=0, step=0):
     if rank == 0:
