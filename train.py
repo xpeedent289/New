@@ -17,12 +17,8 @@ from config import *
 device = torch.device("cuda")
 
 def get_learning_rate(step):
-    if step < 2000:
-        mul = step / 2000
-        return 2e-4 * mul
-    else:
-        mul = np.cos((step - 2000) / (300 * args.step_per_epoch - 2000) * math.pi) * 0.5 + 0.5
-        return (2e-4 - 2e-5) * mul + 2e-5
+    return 5e-5
+
 
 
 def train(model, batch_size, data_path):
@@ -127,4 +123,8 @@ if __name__ == "__main__":
     torch.backends.cudnn.benchmark = True
 
     model = Model(local_rank=0)
+    ckpt_path = "/kaggle/working/New/ckpt/ours.pkl"
+    if os.path.exists(ckpt_path):
+        print(f"Loading checkpoint from {ckpt_path}")
+        model.load_model(name="ours")
     train(model, args.batch_size, args.data_path)
