@@ -37,14 +37,26 @@ class Model:
         self.net.to(torch.device("cuda"))
 
     def load_model(self, name):
-        ckpt_path = os.path.join(
-            os.path.dirname(__file__), "..", "ckpt", f"{name}.pkl"
+        ckpt_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "ckpt", f"{name}.pkl")
         )
-        ckpt_path = os.path.abspath(ckpt_path)
-
         print("Loading checkpoint from:", ckpt_path)
+
         state_dict = torch.load(ckpt_path, map_location="cpu")
-        self.net.load_state_dict(state_dict, strict=True)
+
+        filtered_state = {}
+        for k, v in state_dict.items():
+            if ("attn_mask" in k) or ("HW" in k):
+                continue
+            filtered_state[k] = v
+
+        missing, unexpected = self.net.load_state_dict(
+            filtered_state, strict=False
+        )
+
+        print("Missing keys:", missing)
+        print("Unexpected keys:", unexpected)
+
 
 
     
