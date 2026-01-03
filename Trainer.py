@@ -48,10 +48,16 @@ class Model:
                 name = self.name
             self.net.load_state_dict(convert(torch.load(f'ckpt/{name}.pkl')))
     
-    def save_model(self, rank=0):
-        if rank == 0:
-            os.makedirs('ckpt', exist_ok=True)
-            torch.save(self.net.state_dict(), f'ckpt/{self.name}.pkl')
+def save_model(self, rank=0, epoch=0, step=0):
+    if rank == 0:
+        os.makedirs('ckpt', exist_ok=True)
+        torch.save({
+            'model': self.net.state_dict(),
+            'optimizer': self.optimG.state_dict(),
+            'epoch': epoch,
+            'step': step
+        }, f'ckpt/{self.name}.pth')
+
 
     @torch.no_grad()
     def hr_inference(self, img0, img1, TTA = False, down_scale = 1.0, timestep = 0.5, fast_TTA = False):
