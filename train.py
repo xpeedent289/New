@@ -123,7 +123,7 @@ if __name__ == "__main__":
     torch.backends.cudnn.benchmark = True
 
     model = Model(local_rank=0)
-    ckpt_path = "/kaggle/working/New/ckpt/ours.pkl"
+    ckpt_path = "/kaggle/working/New/ckpt/"
     if os.path.exists(ckpt_path):
         print(f"Loading checkpoint from {ckpt_path}")
         model.load_model(name="ours")
